@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ accion }} Producto – Sakura Kitchen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Noto+Serif+JP:wght@300;400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- NAVBAR -->
+<nav class="sk-nav scrolled" id="skNav">
+    <div class="sk-nav-inner">
+        <a href="{{ url_for('index') }}" class="sk-logo">
+            <div class="logo-wrap" style="width:44px;height:44px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                <span class="sk-logo-kanji">桜</span>
+            </div>
+            <div class="sk-logo-text">
+                <span class="sk-logo-main">SAKURA</span>
+                <span class="sk-logo-sub">KITCHEN</span>
+            </div>
+        </a>
+        <div class="sk-nav-actions">
+            <a href="{{ url_for('index') }}" class="sk-btn-ghost" style="padding:9px 20px;font-size:0.78rem">
+                <i class="fas fa-arrow-left me-2" style="font-size:0.7rem"></i>Volver al catálogo
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<main class="sk-form-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-9">
+
+                <!-- Breadcrumb -->
+                <div class="sk-breadcrumb-bar">
+                    <a href="{{ url_for('index') }}">Catálogo</a>
+                    <span>›</span>
+                    <span style="color:var(--paper)">{{ accion }} Producto</span>
+                </div>
+
+                <div class="sk-form-card">
+                    <!-- Header -->
+                    <div class="sk-form-card-header">
+                        <h3>
+                            <em>{{ accion }}</em> Producto
+                        </h3>
+                        {% if producto %}
+                        <span class="sk-id-badge">ID #{{ '%03d' % producto['id'] }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Body -->
+                    <div class="sk-form-card-body">
+
+                        <!-- Preview imagen -->
+                        <div class="img-prev-wrap">
+                            <img id="imgPreview"
+                                 src="{{ producto['imagen_url'] if producto and producto['imagen_url'] else '' }}"
+                                 class="img-prev {% if not producto or not producto['imagen_url'] %}d-none{% endif %}"
+                                 alt="Preview"
+                                 onerror="this.classList.add('d-none')">
+                        </div>
+
+                        <form method="POST" id="productForm" novalidate>
+                            <div class="row g-4">
+
+                                <!-- Nombre -->
+                                <div class="col-md-8">
+                                    <div class="sk-field">
+                                        <label><i class="fas fa-tag me-1" style="color:var(--gold)"></i>Nombre del producto *</label>
+                                        <input type="text" name="nombre"
+                                               placeholder="Ej: Sushi Salmón Premium"
+                                               value="{{ producto['nombre'] if producto else '' }}" required>
+                                    </div>
+                                </div>
+
+                                <!-- Categoría -->
+                                <div class="col-md-4">
+                                    <div class="sk-field">
+                                        <label><i class="fas fa-folder me-1" style="color:var(--gold)"></i>Categoría *</label>
+                                        <input type="text" name="categoria"
+                                               list="cats"
+                                               placeholder="Sushi, Ramen..."
+                                               value="{{ producto['categoria'] if producto else '' }}" required>
+                                        <datalist id="cats">
+                                            <option value="Sushi">
+                                            <option value="Rolls">
+                                            <option value="Ramen">
+                                            <option value="Sopas">
+                                            <option value="Entradas">
+                                            <option value="Frituras">
+                                            <option value="Postres">
+                                            <option value="Bebidas">
+                                        </datalist>
+                                    </div>
+                                </div>
+
+                                <!-- Descripción -->
+                                <div class="col-12">
+                                    <div class="sk-field">
+                                        <label><i class="fas fa-align-left me-1" style="color:var(--gold)"></i>Descripción *</label>
+                                        <textarea name="descripcion" rows="3"
+                                                  placeholder="Descripción detallada del platillo..." required>{{ producto['descripcion'] if producto else '' }}</textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Precio -->
+                                <div class="col-md-4">
+                                    <div class="sk-field">
+                                        <label><i class="fas fa-dollar-sign me-1" style="color:var(--gold)"></i>Precio (MXN) *</label>
+                                        <div style="display:flex">
+                                            <span style="background:var(--ink-4);border:1px solid var(--border-2);border-right:none;border-radius:10px 0 0 10px;padding:12px 14px;color:var(--muted);font-size:0.9rem">$</span>
+                                            <input type="number" name="precio"
+                                                   style="border-radius:0 10px 10px 0"
+                                                   step="0.01" min="0" placeholder="0.00"
+                                                   value="{{ '%.2f' % producto['precio'] if producto else '' }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cantidad -->
+                                <div class="col-md-4">
+                                    <div class="sk-field">
+                                        <label><i class="fas fa-cubes me-1" style="color:var(--gold)"></i>Cantidad en stock *</label>
+                                        <input type="number" name="cantidad"
+                                               min="0" placeholder="0"
+                                               value="{{ producto['cantidad'] if producto else '' }}" required>
+                                    </div>
+                                </div>
+
+                                <!-- Disponible -->
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <label class="sk-toggle-wrap">
+                                        <input type="checkbox" name="disponible"
+                                               {% if not producto or producto['disponible'] %}checked{% endif %}>
+                                        <span class="sk-field" style="gap:4px">
+                                            <span style="font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">
+                                                <i class="fas fa-check-circle me-1" style="color:var(--gold)"></i>Disponible
+                                            </span>
+                                            <span style="font-size:0.78rem;color:var(--muted);font-weight:300">Visible en el menú</span>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <!-- URL imagen -->
+                                <div class="col-12">
+                                    <div class="sk-field">
+                                        <label><i class="fas fa-image me-1" style="color:var(--gold)"></i>URL de imagen <span style="color:var(--muted);text-transform:none;letter-spacing:0">(opcional)</span></label>
+                                        <input type="url" name="imagen_url" id="imgUrl"
+                                               placeholder="https://ejemplo.com/imagen.jpg"
+                                               value="{{ producto['imagen_url'] if producto and producto['imagen_url'] else '' }}">
+                                        <span style="font-size:0.72rem;color:var(--muted);margin-top:4px">Pega la URL de una imagen para previsualizarla arriba.</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <hr class="sk-form-divider" style="margin-top:32px">
+
+                            <!-- Botones -->
+                            <div class="sk-form-actions">
+                                <button type="submit" class="sk-btn-primary">
+                                    <span>{{ accion }} Producto</span>
+                                    <i class="fas {% if accion == 'Agregar' %}fa-plus{% else %}fa-save{% endif %}"></i>
+                                </button>
+                                <a href="{{ url_for('index') }}" class="sk-btn-ghost">
+                                    Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer style="background:var(--ink-2);border-top:1px solid var(--border-2);padding:24px 0;text-align:center">
+    <p style="font-size:0.75rem;color:rgba(245,239,230,0.3);margin:0">
+        Sakura Kitchen · Sistema de Gestión de Productos
+    </p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

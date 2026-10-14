@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桜 Sakura Kitchen – Cocina Japonesa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Noto+Serif+JP:wght@300;400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="grain"></div>
+<!-- Cursor simple -->
+<div class="sk-cursor" id="skCursor"></div>
+
+<!-- ── NAVBAR ──────────────────────────────────────── -->
+<nav class="sk-nav" id="skNav">
+    <div class="sk-nav-inner">
+        <a href="{{ url_for('index') }}" class="sk-logo">
+            <span class="sk-logo-kanji">桜</span>
+            <div class="sk-logo-text">
+                <span class="sk-logo-main">SAKURA</span>
+                <span class="sk-logo-sub">KITCHEN</span>
+            </div>
+        </a>
+        <ul class="sk-nav-links">
+            <li><a href="#inicio"        class="sk-nl active">Inicio</a></li>
+            <li><a href="#menu-section"  class="sk-nl">Menú</a></li>
+            <li><a href="#nosotros"      class="sk-nl">Nosotros</a></li>
+            <li><a href="#promo"         class="sk-nl">Promociones</a></li>
+            <li><a href="#contacto-form" class="sk-nl">Contacto</a></li>
+        </ul>
+        <div class="sk-nav-actions">
+            <a href="{{ url_for('nuevo_producto') }}" class="sk-btn-gold">
+                <i class="fas fa-plus"></i> Nuevo Producto
+            </a>
+            <button class="sk-hamburger" id="hamburger">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="sk-mobile-menu" id="mobileMenu">
+    <a href="#inicio"        class="sk-ml">Inicio</a>
+    <a href="#menu-section"  class="sk-ml">Menú</a>
+    <a href="#nosotros"      class="sk-ml">Nosotros</a>
+    <a href="#promo"         class="sk-ml">Promociones</a>
+    <a href="#contacto-form" class="sk-ml">Contacto</a>
+    <a href="{{ url_for('nuevo_producto') }}" class="sk-btn-gold mt-3 d-inline-flex">+ Nuevo Producto</a>
+</div>
+
+<!-- ── HERO ─────────────────────────────────────────── -->
+<section class="sk-hero" id="inicio">
+    <div class="sk-hero-bg"></div>
+    <div class="sk-hero-overlay"></div>
+    <div class="sk-hero-kanji-bg">料理</div>
+    <div class="petals-container" id="petals"></div>
+
+    <div class="container sk-hero-content">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-7 sk-hero-text">
+                <div class="sk-hero-label" data-anim="fade-left" data-delay="200">
+                    <span class="label-line"></span>
+                    <span>本物の味 · Sabor Auténtico</span>
+                </div>
+                <h1 class="sk-hero-title" data-anim="fade-up" data-delay="350">
+                    Auténtica<br>
+                    <em class="sk-hero-em">Cocina</em><br>
+                    <span class="sk-hero-jp">Japonesa</span>
+                </h1>
+                <p class="sk-hero-desc" data-anim="fade-up" data-delay="500">
+                    Tradición milenaria, ingredientes frescos<br>y una experiencia culinaria irrepetible.
+                </p>
+                <div class="sk-hero-btns" data-anim="fade-up" data-delay="650">
+                    <a href="#menu-section" class="sk-btn-primary">
+                        <span>Ver Menú</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#contacto-form" class="sk-btn-ghost">Reservar Mesa</a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-flex justify-content-end align-items-center">
+                <div class="sk-hero-badge" data-anim="zoom" data-delay="800">
+                    <span class="badge-kanji">桜</span>
+                    <span class="badge-text">DESDE<br>2010</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sk-scroll-hint">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+    </div>
+</section>
+
+<!-- ── MARQUEE ───────────────────────────────────────── -->
+<div class="sk-marquee-wrap">
+    <div class="sk-marquee">
+        <span>SUSHI · RAMEN · TEMPURA · GYOZA · SASHIMI · MOCHI · SAKE · MATCHA · UDON · ONIGIRI · </span>
+        <span>SUSHI · RAMEN · TEMPURA · GYOZA · SASHIMI · MOCHI · SAKE · MATCHA · UDON · ONIGIRI · </span>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MENÚ – DINÁMICA TIPO MOSHIMOSHI
+     Tabs de categoría a la izquierda, foto grande a la derecha,
+     cards de productos debajo con scroll horizontal
+═══════════════════════════════════════════════════════ -->
+<section class="sk-menu-section" id="menu-section">
+
+    <!-- Alertas flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="container pt-5">
+        {% for category, message in messages %}
+        <div class="sk-alert-msg alert-{{ category }} mb-3">
+            {{ message }}
+            <button onclick="this.parentElement.remove()" class="sk-alert-close">✕</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Header de sección -->
+    <div class="container">
+        <div class="sk-menu-header">
+            <div>
+                <div class="sk-section-tag" data-anim="fade-left">Gestión de productos</div>
+                <h2 class="sk-section-title">Nuestro <em>Menú</em></h2>
+            </div>
+            <a href="{{ url_for('nuevo_producto') }}" class="sk-btn-gold">
+                <i class="fas fa-plus"></i> Agregar Producto
+            </a>
+        </div>
+    </div>
+
+    <!-- ── TARJETAS CIRCULARES DE CATEGORÍA ── -->
+    <div class="sk-cat-cards-wrap">
+        <div class="sk-cat-cards" id="catTabs">
+
+            <!-- Todo -->
+            <button class="sk-cat-card active" data-cat="all"
+                    data-img="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=900"
+                    data-title="Todo el Menú"
+                    data-desc="Explora nuestra selección completa de platillos japoneses.">
+                <div class="sk-cat-card-circle">
+                    <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=300" alt="Todo">
+                    <div class="sk-cat-card-ring"></div>
+                </div>
+                <span class="sk-cat-card-name">Todo</span>
+            </button>
+
+            {% for cat in categorias %}
+            {% set cat_data = {
+                'Sushi':    {'jp': '寿司', 'jp_short': '寿', 'img': 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=300', 'hero': 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=900', 'desc': 'Nigiris, sashimi y rolls elaborados con el pescado más fresco.'},
+                'Ramen':    {'jp': 'ラーメン', 'jp_short': '麺', 'img': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300', 'hero': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=900', 'desc': 'Caldos artesanales cocinados por 18 horas con fideos hechos a mano.'},
+                'Rolls':    {'jp': '巻き', 'jp_short': '巻', 'img': 'https://images.unsplash.com/photo-1562802378-063ec186a863?w=300', 'hero': 'https://images.unsplash.com/photo-1562802378-063ec186a863?w=900', 'desc': 'Nuestros rolls creativos con ingredientes frescos y salsas especiales.'},
+                'Entradas': {'jp': '前菜', 'jp_short': '前', 'img': 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=300', 'hero': 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=900', 'desc': 'Gyoza, edamame y más para comenzar tu experiencia japonesa.'},
+                'Frituras': {'jp': '揚げ物', 'jp_short': '揚', 'img': 'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=300', 'hero': 'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=900', 'desc': 'Tempura crujiente y deliciosa preparada al momento.'},
+                'Postres':  {'jp': 'デザート', 'jp_short': '菓', 'img': 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=300', 'hero': 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=900', 'desc': 'Mochi, helado matcha y dulces japoneses para cerrar con sabor.'},
+                'Sopas':    {'jp': 'スープ', 'jp_short': '汁', 'img': 'https://images.unsplash.com/photo-1547592180-85f173990554?w=300', 'hero': 'https://images.unsplash.com/photo-1547592180-85f173990554?w=900', 'desc': 'Reconfortantes sopas japonesas para cualquier momento.'},
+                'Bebidas':  {'jp': '飲み物', 'jp_short': '酒', 'img': 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300', 'hero': 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=900', 'desc': 'Sake, matcha, jugos y bebidas para acompañar tu comida.'}
+            } %}
+            {% set info = cat_data.get(cat['categoria'], {'jp': '料理', 'jp_short': '料', 'img': 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=300', 'hero': 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=900', 'desc': 'Selección especial de la categoría.'}) %}
+            <button class="sk-cat-card {% if cat['categoria'] == categoria_activa %}active{% endif %}"
+                    data-cat="{{ cat['categoria'] }}"
+                    data-img="{{ info['hero'] }}"
+                    data-title="{{ cat['categoria'] }}"
+                    data-desc="{{ info['desc'] }}">
+                <div class="sk-cat-card-circle">
+                    <img src="{{ info['img'] }}" alt="{{ cat['categoria'] }}"
+                         onerror="this.style.display='none'">
+                    <div class="sk-cat-card-ring"></div>
+                </div>
+                <span class="sk-cat-card-jp">{{ info['jp'] }}</span>
+                <span class="sk-cat-card-name">{{ cat['categoria'] }}</span>
+            </button>
+            {% endfor %}
+
+        </div>
+    </div>
+
+    <!-- ── SLIDER HERO DE CATEGORÍA ── -->
+    <div class="sk-cat-hero" id="catHero">
+
+        <!-- Capas de imagen para crossfade -->
+        <div class="sk-slider-layer" id="sliderLayerA"
+             style="background-image: url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200'); opacity:1; z-index:1"></div>
+        <div class="sk-slider-layer" id="sliderLayerB"
+             style="background-image: url(''); opacity:0; z-index:2"></div>
+
+        <div class="sk-cat-hero-overlay"></div>
+
+        <!-- Contenido -->
+        <div class="sk-cat-hero-content">
+            <h3 class="sk-cat-hero-title" id="catHeroTitle">Todo el Menú</h3>
+            <p class="sk-cat-hero-desc" id="catHeroDesc">Explora nuestra selección completa de platillos japoneses.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="sk-cat-stats">
+            <span><strong id="stat-total">{{ stats['total'] }}</strong> Productos</span>
+            <span class="sep">·</span>
+            <span><strong id="stat-cats">{{ categorias|length }}</strong> Categorías</span>
+            <span class="sep">·</span>
+            <span><strong id="stat-stock">{{ stats['stock'] or 0 }}</strong> En Stock</span>
+        </div>
+
+        <!-- Indicadores del slider -->
+        <div class="sk-slider-dots" id="sliderDots"></div>
+
+        <!-- Controles -->
+        <button class="sk-slider-btn sk-slider-prev" id="sliderPrev">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="sk-slider-btn sk-slider-next" id="sliderNext">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <!-- Barra de progreso del slide -->
+        <div class="sk-slider-progress" id="sliderProgress">
+            <div class="sk-slider-progress-bar" id="sliderProgressBar"></div>
+        </div>
+
+    </div>
+
+    <!-- ── BUSCADOR (simple, sin botón filtrar) ── -->
+    <div class="container">
+        <div class="sk-search-bar">
+            <form method="GET" id="searchForm">
+                <input type="hidden" name="categoria" id="hiddenCat" value="{{ categoria_activa }}">
+                <div class="sk-search-row">
+                    <div class="sk-search-field">
+                        <i class="fas fa-search"></i>
+                        <input type="text" name="busqueda" id="searchInput"
+                               placeholder="Buscar platillo..." value="{{ busqueda }}"
+                               autocomplete="off">
+                        {% if busqueda %}
+                        <button type="button" id="searchClearBtn" class="sk-search-clear" title="Limpiar">✕</button>
+                        {% endif %}
+                    </div>
+                    <button type="button" id="searchBtn" class="sk-btn-search">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+            {% if busqueda or categoria_activa %}
+            <p class="sk-results-note">
+                {{ productos|length }} resultado(s)
+                {% if busqueda %}para "<em>{{ busqueda }}</em>"{% endif %}
+                {% if categoria_activa %}en <em>{{ categoria_activa }}</em>{% endif %}
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- ── GRID DE PRODUCTOS ── -->
+        {% if productos %}
+        <div class="sk-prod-grid" id="prodGrid">
+            {% for p in productos %}
+            <div class="sk-prod-card">
+                <div class="sk-prod-img">
+                    {% if p['imagen_url'] %}
+                    <img src="{{ p['imagen_url'] }}" alt="{{ p['nombre'] }}"
+                         onerror="this.parentElement.querySelector('.sk-prod-fallback').style.display='flex';this.style.display='none'">
+                    {% endif %}
+                    <div class="sk-prod-fallback" {% if p['imagen_url'] %}style="display:none"{% endif %}>
+                        <i class="fas fa-bowl-food"></i>
+                    </div>
+                    <div class="sk-prod-hover-actions">
+                        <a href="{{ url_for('editar_producto', id=p['id']) }}" class="sk-pa">
+                            <i class="fas fa-pencil"></i>
+                        </a>
+                        <button class="sk-pa danger"
+                                onclick="confirmarEliminar({{ p['id'] }}, '{{ p['nombre'] }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <span class="sk-prod-cat-badge">{{ p['categoria'] }}</span>
+                    {% if not p['disponible'] %}
+                    <div class="sk-prod-unavail">No disponible</div>
+                    {% endif %}
+                </div>
+                <div class="sk-prod-body">
+                    <span class="sk-prod-id">#{{ '%03d' % p['id'] }}</span>
+                    <h5 class="sk-prod-name">{{ p['nombre'] }}</h5>
+                    <p class="sk-prod-desc">{{ p['descripcion'] }}</p>
+                    <div class="sk-prod-foot">
+                        <div class="sk-prod-foot-left">
+                            <span class="sk-prod-price">${{ '%.2f' % p['precio'] }}</span>
+                            <span class="sk-prod-stock {% if p['cantidad'] == 0 %}out{% elif p['cantidad'] < 10 %}low{% endif %}"
+                                  id="stock-{{ p['id'] }}">
+                                {{ p['cantidad'] }} uds.
+                            </span>
+                        </div>
+                        {% if p['disponible'] and p['cantidad'] > 0 %}
+                        <button class="sk-add-btn"
+                                onclick="cartAdd({{ p['id'] }}, '{{ p['nombre']|e }}', {{ p['precio'] }}, '{{ p['imagen_url'] or '' }}')"
+                                id="addbtn-{{ p['id'] }}"
+                                title="Agregar al carrito">+</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="sk-empty">
+            <span style="font-size:4rem">🍜</span>
+            <h4>Sin resultados</h4>
+            <p>Prueba con otra búsqueda o agrega un producto nuevo.</p>
+            <a href="{{ url_for('nuevo_producto') }}" class="sk-btn-gold">+ Agregar Producto</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ── NOSOTROS ──────────────────────────────────────── -->
+<section class="sk-section sk-nosotros" id="nosotros">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="sk-nos-imgs" data-anim="fade-right" data-delay="100">
+                    <img src="https://images.unsplash.com/photo-1529543544282-ea669407fca3?w=600" class="sk-nos-img-main" alt="Chef">
+                    <img src="https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=400" class="sk-nos-img-sec" alt="Roll">
+                    <div class="sk-nos-badge">
+                        <span class="nos-badge-kanji">桜</span>
+                        <span>14 años<br>de sabor</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="sk-section-tag" data-anim="fade-left">Nuestra historia</div>
+                <h2 class="sk-section-title" data-anim="fade-up" data-delay="100">¡Esto es<br><em>Sakura Kitchen!</em></h2>
+                <p class="sk-nos-text" data-anim="fade-up" data-delay="200">
+                    Nuestra historia comenzó en 2010, cuando abrimos las puertas del primer Sakura Kitchen en Colima, inspirados en la vibrante cultura culinaria japonesa.
+                </p>
+                <p class="sk-nos-text">
+                    Desde entonces nos hemos dedicado a consentirte con tus antojitos japoneses favoritos, elaborados diariamente con los mejores ingredientes frescos.
+                </p>
+                <div class="sk-nos-stats" data-anim="fade-up" data-delay="300">
+                    <div class="sk-nos-stat">
+                        <span class="nos-n">14+</span>
+                        <span class="nos-l">Años de experiencia</span>
+                    </div>
+                    <div class="sk-nos-stat">
+                        <span class="nos-n">50+</span>
+                        <span class="nos-l">Platillos únicos</span>
+                    </div>
+                    <div class="sk-nos-stat">
+                        <span class="nos-n">🌸</span>
+                        <span class="nos-l">Sabor auténtico</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── ESPECIALIDADES ─────────────────────────────────── -->
+<section class="sk-section sk-especialidades">
+    <div class="container">
+        <div class="sk-section-header">
+            <div class="sk-section-tag">Nuestras especialidades</div>
+            <h2 class="sk-section-title">Una experiencia<br><em>para los sentidos</em></h2>
+        </div>
+        <div class="row g-4">
+            <!-- Sushi -->
+            <div class="col-6 col-lg-3">
+                <a href="#" class="sk-esp-link" data-cat="Sushi" data-title="Sushi" data-desc="Nigiris, rolls y sashimi con el pescado más fresco.">
+                    <div class="sk-esp-card">
+                        <div class="sk-esp-img">
+                            <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?w=500" alt="Sushi"
+                                 onerror="this.src='https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=500'">
+                            <div class="sk-esp-num">01</div>
+                            <div class="sk-esp-cta">Ver Sushi <i class="fas fa-arrow-right"></i></div>
+                        </div>
+                        <div class="sk-esp-body">
+                            <div class="sk-esp-icon"><i class="fas fa-fish"></i></div>
+                            <h4 class="sk-esp-name">Sushi</h4>
+                            <p class="sk-esp-desc">Rolls y nigiris con los ingredientes más frescos.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <!-- Ramen -->
+            <div class="col-6 col-lg-3">
+                <a href="#" class="sk-esp-link" data-cat="Ramen" data-title="Ramen" data-desc="Caldos artesanales 18 horas con fideos hechos a mano.">
+                    <div class="sk-esp-card">
+                        <div class="sk-esp-img">
+                            <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500" alt="Ramen"
+                                 onerror="this.src='https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=500'">
+                            <div class="sk-esp-num">02</div>
+                            <div class="sk-esp-cta">Ver Ramen <i class="fas fa-arrow-right"></i></div>
+                        </div>
+                        <div class="sk-esp-body">
+                            <div class="sk-esp-icon"><i class="fas fa-bowl-food"></i></div>
+                            <h4 class="sk-esp-name">Ramen</h4>
+                            <p class="sk-esp-desc">Caldo artesanal 18 horas con fideos a mano.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <!-- Entradas -->
+            <div class="col-6 col-lg-3">
+                <a href="#" class="sk-esp-link" data-cat="Entradas" data-title="Entradas" data-desc="Gyoza, edamame y tempura para comenzar tu experiencia.">
+                    <div class="sk-esp-card">
+                        <div class="sk-esp-img">
+                            <img src="https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=500" alt="Entradas"
+                                 onerror="this.src='https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500'">
+                            <div class="sk-esp-num">03</div>
+                            <div class="sk-esp-cta">Ver Entradas <i class="fas fa-arrow-right"></i></div>
+                        </div>
+                        <div class="sk-esp-body">
+                            <div class="sk-esp-icon"><i class="fas fa-utensils"></i></div>
+                            <h4 class="sk-esp-name">Entradas</h4>
+                            <p class="sk-esp-desc">Gyoza, edamame y tempura para iniciar.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <!-- Postres -->
+            <div class="col-6 col-lg-3">
+                <a href="#" class="sk-esp-link" data-cat="Postres" data-title="Postres" data-desc="Mochi, helado matcha y dulces japoneses para cerrar.">
+                    <div class="sk-esp-card">
+                        <div class="sk-esp-img">
+                            <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500" alt="Postres"
+                                 onerror="this.src='https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500'">
+                            <div class="sk-esp-num">04</div>
+                            <div class="sk-esp-cta">Ver Postres <i class="fas fa-arrow-right"></i></div>
+                        </div>
+                        <div class="sk-esp-body">
+                            <div class="sk-esp-icon"><i class="fas fa-ice-cream"></i></div>
+                            <h4 class="sk-esp-name">Postres</h4>
+                            <p class="sk-esp-desc">Mochi, helado matcha para cerrar con dulzura.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── PROMOCIÓN ──────────────────────────────────────── -->
+<section class="sk-promo" id="promo">
+    <div class="sk-promo-overlay"></div>
+    <div class="container sk-promo-content">
+        <div class="sk-promo-tag" data-anim="fade-up">Oferta especial</div>
+        <p class="sk-promo-days">Lunes a Jueves</p>
+        <h2 class="sk-promo-pct" data-anim="zoom" data-delay="150">20<span>%</span></h2>
+        <p class="sk-promo-label">DE DESCUENTO EN TODOS<br>NUESTROS ROLLS</p>
+        <a href="#menu-section" class="sk-btn-primary mt-4">
+            <span>Ver Menú</span><i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+    <div class="sk-promo-kanji">寿司</div>
+</section>
+
+<!-- ── CONTACTO ───────────────────────────────────────── -->
+<section class="sk-section sk-contacto-sec" id="contacto-form">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-5">
+                <div class="sk-section-tag">Escríbenos</div>
+                <h2 class="sk-section-title">Reserva o<br><em>Contáctanos</em></h2>
+                <p class="sk-contact-sub" data-anim="fade-up" data-delay="100">¿Tienes una pregunta, evento especial o simplemente quieres saludarnos?</p>
+                <ul class="sk-contact-list" data-anim="fade-up" data-delay="200">
+                    <li>
+                        <div class="sk-cl-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div><strong>Dirección</strong><br>Av. Japón 1234, Colima, México</div>
+                    </li>
+                    <li>
+                        <div class="sk-cl-icon"><i class="fas fa-phone"></i></div>
+                        <div><strong>Teléfono</strong><br>312 123 4567</div>
+                    </li>
+                    <li>
+                        <div class="sk-cl-icon"><i class="fas fa-envelope"></i></div>
+                        <div><strong>Correo</strong><br>info@sakurakitchen.mx</div>
+                    </li>
+                    <li>
+                        <div class="sk-cl-icon"><i class="fas fa-clock"></i></div>
+                        <div><strong>Horario</strong><br>Lun – Dom: 12:00 pm – 11:00 pm</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-7">
+                <div class="sk-form-wrap" data-anim="fade-left" data-delay="150">
+                    <div id="form-ok" class="sk-form-ok d-none">
+                        <i class="fas fa-check-circle me-2"></i>¡Mensaje enviado! Te contactaremos pronto.
+                    </div>
+                    <form id="contactoForm" novalidate>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="sk-field">
+                                    <label>Nombre *</label>
+                                    <input type="text" id="c-nombre" placeholder="Tu nombre completo" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="sk-field">
+                                    <label>Correo *</label>
+                                    <input type="email" id="c-email" placeholder="correo@ejemplo.com" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="sk-field">
+                                    <label>Teléfono</label>
+                                    <input type="tel" id="c-telefono" placeholder="312 000 0000">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="sk-field">
+                                    <label>Asunto *</label>
+                                    <select id="c-asunto" required>
+                                        <option value="">Selecciona...</option>
+                                        <option>Reservación de mesa</option>
+                                        <option>Pedido especial</option>
+                                        <option>Evento privado</option>
+                                        <option>Información del menú</option>
+                                        <option>Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="sk-field">
+                                    <label>Mensaje *</label>
+                                    <textarea id="c-mensaje" rows="4" placeholder="Escribe tu mensaje..." required></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="sk-btn-primary w-100 justify-content-center">
+                                    <span>Enviar Mensaje</span>
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────── -->
+<footer class="sk-footer" id="contacto">
+    <div class="sk-footer-top">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <a href="#" class="sk-logo mb-4 d-inline-flex">
+                        <span class="sk-logo-kanji">桜</span>
+                        <div class="sk-logo-text">
+                            <span class="sk-logo-main">SAKURA</span>
+                            <span class="sk-logo-sub">KITCHEN</span>
+                        </div>
+                    </a>
+                    <p class="sk-footer-about">Restaurante de cocina japonesa auténtica en el corazón de Colima. Tradición, sabor y hospitalidad en cada visita.</p>
+                    <div class="sk-socials">
+                        <a href="#" class="sk-social"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="sk-social"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="sk-social"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="sk-social"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="sk-footer-h">Encuéntranos</h6>
+                    <div class="sk-footer-map">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d60124!2d-103.724!3d19.245!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x84249c4d!2sColima!5e0!3m2!1ses!2smx!4v1"
+                            width="100%" height="170" style="border:0;border-radius:10px;filter:invert(85%) hue-rotate(180deg) saturate(0.7)" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="sk-footer-h">Contacto</h6>
+                    <ul class="sk-footer-list">
+                        <li><i class="fas fa-map-marker-alt"></i>Av. Japón 1234, Colima, México</li>
+                        <li><i class="fas fa-phone"></i>312 123 4567</li>
+                        <li><i class="fas fa-envelope"></i>info@sakurakitchen.mx</li>
+                        <li><i class="fas fa-clock"></i>Lun – Dom: 12:00 – 23:00</li>
+                    </ul>
+                    <a href="#contacto-form" class="sk-btn-gold d-inline-flex mt-3">Reservar Mesa</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sk-footer-bottom">
+        <div class="container">
+            <span>© 2024 Sakura Kitchen · Cocina Japonesa</span>
+            <span>Desarrollado con <i class="fas fa-heart" style="color:#c0392b"></i> en Colima, México</span>
+        </div>
+    </div>
+</footer>
+
+
+<!-- ── CARRITO FLOTANTE ─────────────────────────────── -->
+<div id="cartWidget">
+    <div id="cartPanel">
+        <div class="cart-head">
+            <h4>🛒 Tu Pedido</h4>
+            <button class="cart-clear-btn" onclick="cartClear()">Vaciar</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty-msg">
+                <span>🍱</span>
+                <p>Tu carrito está vacío</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display:none">
+            <div class="cart-total-row">
+                <span class="cart-total-label">Total</span>
+                <span class="cart-total-val" id="cartTotal">$0.00</span>
+            </div>
+            <button class="cart-confirm-btn" id="cartConfirmBtn" onclick="cartConfirm()">
+                <i class="fas fa-check-circle me-2"></i>Confirmar Pedido
+            </button>
+        </div>
+    </div>
+    <button id="cartBtn" onclick="cartToggle()" title="Ver carrito">
+        <i class="fas fa-shopping-bag"></i>
+        <span id="cartCount"></span>
+    </button>
+</div>
+
+<!-- Modal eliminar -->
+<div class="sk-modal-bg" id="deleteModalBg">
+    <div class="sk-modal-box">
+        <div class="sk-modal-icon"><i class="fas fa-trash"></i></div>
+        <h5 class="sk-modal-title">¿Eliminar producto?</h5>
+        <p class="sk-modal-text">Estás a punto de eliminar <strong id="productName"></strong>. Esta acción no se puede deshacer.</p>
+        <div class="sk-modal-btns">
+            <button onclick="document.getElementById('deleteModalBg').classList.remove('show')" class="sk-modal-cancel">Cancelar</button>
+            <form id="deleteForm" method="POST" style="display:inline">
+                <button type="submit" class="sk-modal-confirm">Sí, eliminar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
